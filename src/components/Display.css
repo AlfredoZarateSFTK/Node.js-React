@@ -1,0 +1,15 @@
+.calculator-display {
+  background-color: #1c191c;
+  color: white;
+  text-align: right;
+  font-weight: 300;
+  padding: 1.5rem 1rem;
+  font-size: 2.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calculator-display-text {
+  font-family: 'Helvetica Neue', sans-serif;
+}
