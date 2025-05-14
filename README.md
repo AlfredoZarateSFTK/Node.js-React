@@ -14,7 +14,7 @@ Una aplicación de calculadora visual implementada con Node.js y React.
 ## Instalación
 ```bash
 # Clonar el repositorio
-git clone https://github.com/usuario/calculadora-react.git
+git clone https://github.com/AlfredoZarateSFTK/Node.js-React
 
 # Navegar al directorio del proyecto
 cd calculadora-react
