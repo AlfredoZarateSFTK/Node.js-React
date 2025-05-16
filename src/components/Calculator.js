@@ -9,23 +9,23 @@ const Calculator = () => {
   const [operation, setOperation] = useState(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);
 
-  const clearDisplay = () => {
+  const clearDisplay = useCallback(() => {
     setDisplay('0');
     setPreviousValue(null);
     setOperation(null);
     setWaitingForOperand(false);
-  };
+  }, []);
 
-  const inputDigit = (digit) => {
+  const inputDigit = useCallback((digit) => {
     if (waitingForOperand) {
       setDisplay(String(digit));
       setWaitingForOperand(false);
     } else {
       setDisplay(display === '0' ? String(digit) : display + digit);
     }
-  };
+  }, [display, waitingForOperand]);
 
-  const inputDecimal = () => {
+  const inputDecimal = useCallback(() => {
     if (waitingForOperand) {
       setDisplay('0.');
       setWaitingForOperand(false);
@@ -35,20 +35,20 @@ const Calculator = () => {
     if (display.indexOf('.') === -1) {
       setDisplay(display + '.');
     }
-  };
+  }, [display, waitingForOperand]);
 
-  const toggleSign = () => {
+  const toggleSign = useCallback(() => {
     const newValue = parseFloat(display) * -1;
     setDisplay(String(newValue));
-  };
+  }, [display]);
 
-  const inputPercent = () => {
+  const inputPercent = useCallback(() => {
     const currentValue = parseFloat(display);
     const newValue = currentValue / 100;
     setDisplay(String(newValue));
-  };
+  }, [display]);
 
-  const performOperation = (nextOperation) => {
+  const performOperation = useCallback((nextOperation) => {
     const inputValue = parseFloat(display);
 
     if (previousValue === null) {
@@ -56,22 +56,31 @@ const Calculator = () => {
     } else if (operation) {
       const currentValue = previousValue ?? 0;
 
-      let newValue;
+      let calculationResult;
       switch (operation) {
-        case '+': newValue = currentValue + inputValue; break;
-        case '-': newValue = currentValue - inputValue; break;
-        case '×': newValue = currentValue * inputValue; break;
-        case '÷': newValue = currentValue / inputValue; break;
-        default:  newValue = inputValue;
+        case '+': calculationResult = currentValue + inputValue; break;
+        case '-': calculationResult = currentValue - inputValue; break;
+        case '×': calculationResult = currentValue * inputValue; break;
+        case '÷': 
+          if (inputValue === 0) {
+            setDisplay('Error');
+            setPreviousValue(null);
+            setOperation(null);
+            setWaitingForOperand(true);
+            return;
+          }
+          calculationResult = currentValue / inputValue; 
+          break;
+        default:  calculationResult = inputValue;
       }
 
-      setPreviousValue(newValue);
-      setDisplay(String(newValue));
+      setPreviousValue(calculationResult);
+      setDisplay(String(calculationResult));
     }
 
     setWaitingForOperand(true);
     setOperation(nextOperation);
-  };
+  }, [display, previousValue, operation]);
 
   return (
     <div className="calculator">
@@ -79,13 +88,13 @@ const Calculator = () => {
       <div className="calculator-keypad">
         <div className="input-keys">
           <div className="function-keys">
-            <Button className="key-clear" onClick={() => clearDisplay()}>
+            <Button className="key-clear" onClick={clearDisplay}>
               C
             </Button>
-            <Button className="key-sign" onClick={() => toggleSign()}>
+            <Button className="key-sign" onClick={toggleSign}>
               ±
             </Button>
-            <Button className="key-percent" onClick={() => inputPercent()}>
+            <Button className="key-percent" onClick={inputPercent}>
               %
             </Button>
           </div>
@@ -93,7 +102,7 @@ const Calculator = () => {
             <Button className="key-0" onClick={() => inputDigit(0)}>
               0
             </Button>
-            <Button className="key-dot" onClick={() => inputDecimal()}>
+            <Button className="key-dot" onClick={inputDecimal}>
               .
             </Button>
             <Button className="key-1" onClick={() => inputDigit(1)}>
